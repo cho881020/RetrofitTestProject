@@ -1,6 +1,6 @@
 package com.k.testproject.datas
 
-data class LoginResult (
+data class DefaultResponse (
     var code : Int,
     var message: String,
     var data: DataResponse

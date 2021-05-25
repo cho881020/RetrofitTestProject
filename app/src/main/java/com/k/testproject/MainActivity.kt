@@ -4,11 +4,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.k.testproject.datas.LoginResult
+import com.k.testproject.datas.DefaultResponse
 import com.k.testproject.utils.ServerAPI
 import com.k.testproject.utils.ServerAPIService
 import okhttp3.FormBody
-import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,14 +30,14 @@ class MainActivity : AppCompatActivity() {
             .add("password", "Test!1234")
             .build()
 
-        apiService.postRequestLogin("test@test.com", "Test!123").enqueue(object :Callback<LoginResult> {
-            override fun onFailure(call: Call<LoginResult>, t: Throwable) {
+        apiService.postRequestLogin("test@test.com", "Test!123").enqueue(object :Callback<DefaultResponse> {
+            override fun onFailure(call: Call<DefaultResponse>, t: Throwable) {
 
                 Log.d("응답", "${t}")
                 Log.d("콜이어떻게", call.toString())
             }
 
-            override fun onResponse(call: Call<LoginResult>, response: Response<LoginResult>) {
+            override fun onResponse(call: Call<DefaultResponse>, response: Response<DefaultResponse>) {
 
                 Log.d("응답", "${response}")
 
@@ -49,6 +48,24 @@ class MainActivity : AppCompatActivity() {
                     Log.d("결과", result.message.toString())
 
                     Toast.makeText(this@MainActivity, result.data.user.email, Toast.LENGTH_SHORT).show()
+
+                    val token = result.data.token!!
+
+                    apiService.getRequestUser(token).enqueue(object : Callback<DefaultResponse> {
+                        override fun onFailure(call: Call<DefaultResponse>, t: Throwable) {
+
+                        }
+
+                        override fun onResponse(
+                            call: Call<DefaultResponse>,
+                            response: Response<DefaultResponse>
+                        ) {
+                            if (response.isSuccessful) {
+                                Log.d("겟리퀘스트바디", "${response.body()!!.data.users.size} 명")
+                            }
+                        }
+
+                    })
                 }
                 else {
                     Log.d("에러", response.errorBody().toString())
