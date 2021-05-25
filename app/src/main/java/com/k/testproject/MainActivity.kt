@@ -3,6 +3,7 @@ package com.k.testproject
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import com.k.testproject.datas.LoginResult
 import com.k.testproject.utils.ServerAPI
 import com.k.testproject.utils.ServerAPIService
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity() {
             .add("password", "Test!1234")
             .build()
 
-        apiService.postRequestLogin(formBody).enqueue(object :Callback<LoginResult> {
+        apiService.postRequestLogin("test@test.com", "Test!123").enqueue(object :Callback<LoginResult> {
             override fun onFailure(call: Call<LoginResult>, t: Throwable) {
 
                 Log.d("응답", "${t}")
@@ -43,9 +44,11 @@ class MainActivity : AppCompatActivity() {
 
                 if (response.isSuccessful) {
 
-                    val result = response.body()
-                    Log.d("결과", result?.code.toString())
-                    Log.d("결과", result?.message.toString())
+                    val result = response.body()!!
+                    Log.d("결과", result.code.toString())
+                    Log.d("결과", result.message.toString())
+
+                    Toast.makeText(this@MainActivity, result.data.user.email, Toast.LENGTH_SHORT).show()
                 }
                 else {
                     Log.d("에러", response.errorBody().toString())
